@@ -26,7 +26,7 @@ class WindowInfo:
 
 
 class GLWindow(QtOpenGL.QGLWidget):
-    def __init__(self, size, title, out_dir):
+    def __init__(self, size, title, args):
         fmt = QtOpenGL.QGLFormat()
         fmt.setVersion(3, 3)
         fmt.setProfile(QtOpenGL.QGLFormat.CoreProfile)
@@ -48,7 +48,7 @@ class GLWindow(QtOpenGL.QGLWidget):
         self.wnd.ratio = size[0] / size[1]
         self.wnd.size = size
 
-        self.out_dir = out_dir
+        self.args = args
 
     def keyPressEvent(self, event):
         # Quit when ESC is pressed
@@ -77,7 +77,7 @@ class GLWindow(QtOpenGL.QGLWidget):
 
     def paintGL(self):
         if self.ex is None:
-            self.ex = self.example()
+            self.ex = self.example(self.args)
 
         self.wnd.time = time.clock() - self.start_time
         self.ex.render()
@@ -85,17 +85,16 @@ class GLWindow(QtOpenGL.QGLWidget):
         self.wnd.wheel = 0
         self.update()
 
-        if self.out_dir is not None:
+        if self.ex.out_dir is not None:
             bfr = self.grabFrameBuffer()
-            out_path = r"{}\{}.png".format(self.out_dir, datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            out_path = r"{}\{}.png".format(self.ex.out_dir, datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
             print(out_path)
             bfr.save(out_path)
-            QtCore.QCoreApplication.instance().quit()
 
 
-def run_window(window, out_dir=None):
+def run_window(window, args):
     app = QtWidgets.QApplication([])
-    widget = GLWindow(window.WINDOW_SIZE, getattr(window, 'WINDOW_TITLE', window.__name__), out_dir=out_dir)
+    widget = GLWindow(window.WINDOW_SIZE, getattr(window, 'WINDOW_TITLE', window.__name__), args)
     window.wnd = widget.wnd
     widget.example = window
     widget.show()
