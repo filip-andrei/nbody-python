@@ -83,4 +83,4 @@ class Renderer(Window):
         self.vao.render(mode=mgl.POINTS)
 
 
-run_window(Renderer)
+run_window(Renderer, out_dir=r"D:\temp\\")
